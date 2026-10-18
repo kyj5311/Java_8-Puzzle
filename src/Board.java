@@ -1,3 +1,5 @@
+import java.util.Random;
+
 //주요 필드
 //tiles, blankPos, neighbors
 
@@ -9,7 +11,6 @@ public class Board {
     private int boardSize;
     // 칸 개수
     private int boardLength;
-
     // 칸 번호 순서대로 타일을 숫자를 저장한다. 빈칸은 0으로 저장한다.
     // N*N길이 int 1차원 배열 -> 1~n-1, 0 저장
     private int [] tiles;
@@ -27,10 +28,6 @@ public class Board {
         this.boardLength = boardSize*boardSize;
         // 정렬된 상태인 1~n-1, 0을 순서대로 저장
         this.tiles = new int[boardLength];
-        // resetSorted가 blankPos 초기화를 포함하고 있음
-        // 초기 빈간 위치는 마지막 칸임
-        this.resetSorted();
-
 
         // 이동가능한 칸 2차원 배열에 무방향 그래프로 저장
         this.neighbors = new int[boardLength][4];
@@ -55,6 +52,8 @@ public class Board {
 
         }
 
+        // shuffle가 resetSorted를 resetSorted가 blankPos 초기화를 포함하고 있음
+        this.shuffle();
     }
 
     public void resetSorted(){
@@ -77,6 +76,28 @@ public class Board {
             blankPos = cellNo;
         }
     }
+    //초기 상태 생성
+    public void shuffle() {
+        int k = boardSize*10;
+        Random rand = new Random();
+        int prevPos = -1;
+        int picked;
+
+        this.resetSorted();
+
+        for(int n=0;n<k;n++) {
+            do {
+                picked = neighbors[blankPos][rand.nextInt(4)];
+                // 이전 칸 숫자가 아니고 -1도 아니여야함
+            } while (picked == prevPos || picked == -1);
+
+            prevPos = blankPos;
+            this.move(picked);
+        }
+
+        if(this.isSolved())
+            this.shuffle();
+    }
     //최종 상태인지 판별
     public boolean isSolved() {
 
@@ -88,8 +109,8 @@ public class Board {
         return true;
     }
 
-    // ===== [확인용] 판 상태 출력 (칸 번호 0 ~ N²-1, 없음 = -1) — 제출 전 삭제 =====
-    public void debugPrint(boolean showNeighbors) {
+
+    public void boardPrint() {
         System.out.println("========== " + boardSize + "x" + boardSize + " ==========");
 
         // 1) tiles: 판 모양으로 출력 (빈칸은 _)
@@ -98,6 +119,11 @@ public class Board {
             System.out.print(tiles[i] == 0 ? "  _" : String.format("%3d", tiles[i]));
             if ((i + 1) % boardSize == 0) System.out.println();
         }
+    }
+    // ===== [확인용] 판 상태 출력 (칸 번호 0 ~ N²-1, 없음 = -1) — 제출 전 삭제 =====
+    public void debugPrint(boolean showNeighbors) {
+
+        this.boardPrint();
 
         // 2) blankPos 와 실제 0의 위치 비교
         int zeroAt = -1;
