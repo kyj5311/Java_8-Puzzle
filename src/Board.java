@@ -62,19 +62,18 @@ public class Board {
         tiles[boardLength-1] = 0;
         blankPos = boardLength-1;
     }
-    public boolean canMove(int cellNo) {
-        for(int index : neighbors[blankPos])
-            if (index == cellNo)
-                return true;
-
-        return false;
+    public void canMove(int cellNo) {
+        for(int index : neighbors[blankPos]) {
+            if (index == cellNo) {
+                this.move(cellNo);
+                break;
+            }
+        }
     }
     public void move(int cellNo) {
-        if(canMove(cellNo)) {
-            tiles[blankPos] = tiles[cellNo];
-            tiles[cellNo] = 0;
-            blankPos = cellNo;
-        }
+        tiles[blankPos] = tiles[cellNo];
+        tiles[cellNo] = 0;
+        blankPos = cellNo;
     }
     //초기 상태 생성
     public void shuffle() {
@@ -98,7 +97,7 @@ public class Board {
         if(this.isSolved())
             this.shuffle();
     }
-    //최종 상태인지 판별
+    //최종 상태 판별
     public boolean isSolved() {
 
         //숫자 타일들이 정렬 되어있으면 자동으로 마지막칸은 빈칸임 -> 반복문 범위 : boardLength-1
