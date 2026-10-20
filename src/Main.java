@@ -8,5 +8,4 @@ void main() {
 
     b3.boardPrint();
 
-    MainFrame mf = new MainFrame();
 }
