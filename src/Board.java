@@ -62,6 +62,8 @@ public class Board {
         tiles[boardLength-1] = 0;
         blankPos = boardLength-1;
     }
+
+    //canMove이지만 이웃이면 이동까지 수행
     public void canMove(int cellNo) {
         for(int index : neighbors[blankPos]) {
             if (index == cellNo) {
@@ -70,7 +72,7 @@ public class Board {
             }
         }
     }
-    public void move(int cellNo) {
+    private void move(int cellNo) {
         tiles[blankPos] = tiles[cellNo];
         tiles[cellNo] = 0;
         blankPos = cellNo;

@@ -1,3 +1,4 @@
+import javax.swing.*;
 
 void main() {
 
@@ -8,5 +9,6 @@ void main() {
 
     b3.boardPrint();
 
-    MainFrame mf = new MainFrame();
+    GameController controller = new GameController();
+    SwingUtilities.invokeLater(() -> new MainFrame(controller));
 }
