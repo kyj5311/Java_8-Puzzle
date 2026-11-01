@@ -1,15 +1,15 @@
 import javax.swing.*;
 import java.awt.*;
-
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class MainFrame {
     JFrame clientJFrame = new JFrame("8-Puzzle");
 
     JMenuBar menuBar = new JMenuBar();     //메뉴바
         JMenu menuJMenu = new JMenu("Menu");
-            JMenuItem exitJMenuItem = new JMenuItem("Exit");
-            JMenuItem new_gameJMenuItem = new JMenuItem("New Game");
+        JMenuItem exitJMenuItem = new JMenuItem("Exit");
+        JMenuItem new_gameJMenuItem = new JMenuItem("New Game");
         JMenu sizeJMenu = new JMenu("Size");
             JMenuItem size_3JMenuItem = new JMenuItem("3×3");
             JMenuItem size_4JMenuItem = new JMenuItem("4×4");
@@ -20,6 +20,8 @@ public class MainFrame {
     public MainFrame(GameController controller) {
 
         gamePanel = new GamePanel(controller);
+        controller.setPanel(gamePanel);
+
         //메뉴바 설정
         sizeJMenu.add(size_3JMenuItem);
         sizeJMenu.add(size_4JMenuItem);
@@ -33,24 +35,27 @@ public class MainFrame {
         menuBar.add(menuJMenu);
         clientJFrame.setJMenuBar(menuBar);
 
-        size_3JMenuItem.addActionListener(e -> System.out.println("[메뉴] Size 3×3 선택"));
-        size_4JMenuItem.addActionListener(e -> System.out.println("[메뉴] Size 4×4 선택"));
-        size_5JMenuItem.addActionListener(e -> System.out.println("[메뉴] Size 5×5 선택"));
-        new_gameJMenuItem.addActionListener(e -> System.out.println("[메뉴] New Game 선택"));
-        exitJMenuItem.addActionListener(e -> {
-            System.out.println("[메뉴] Exit 선택");
-            System.exit(0);          //"중단 확인 팝업"으로 바꿀 자리
-        });
+        // 메뉴 선택 → 컨트롤러의 매칭되는 메서드 호출 (화면은 전달만)
+        size_3JMenuItem.addActionListener(e -> controller.startGame(3));
+        size_4JMenuItem.addActionListener(e -> controller.startGame(4));
+        size_5JMenuItem.addActionListener(e -> controller.startGame(5));
 
+        new_gameJMenuItem.addActionListener(e -> controller.onNewGame());
+        exitJMenuItem.addActionListener(e -> controller.onCloseRequest());
 
-        //프래임 설정
+        //프레임 설정
         clientJFrame.setSize(700,  500);
         clientJFrame.setLocation(400, 100);
-        clientJFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-
         clientJFrame.setResizable(false);
 
+        // 창 닫기(X): 바로 종료하지 않고 중단 확인 팝업
+        clientJFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        clientJFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                controller.onCloseRequest();
+            }
+        });
 
         menuBar.setBackground(Color.WHITE);
         clientJFrame.add(gamePanel.getView(), BorderLayout.CENTER);
